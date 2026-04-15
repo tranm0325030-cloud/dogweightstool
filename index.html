@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dog Weight Management by Tancy</title>
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(147, 197, 253, 0.55), transparent 35%),
+        radial-gradient(circle at bottom right, rgba(244, 114, 182, 0.35), transparent 30%),
+        linear-gradient(135deg, #eff6ff, #fdf2f8);
+      min-height: 100vh;
+    }
+
+    .glass {
+      background: rgba(255, 255, 255, 0.82);
+      backdrop-filter: blur(10px);
+    }
+
+    .result-card {
+      animation: fadeIn 0.35s ease;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
+</head>
+<body class="px-4 py-8 text-slate-800">
+  <main class="mx-auto max-w-5xl">
+    <div class="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
+      <section class="glass rounded-3xl border border-white/60 p-6 shadow-2xl shadow-sky-100/60 md:p-8">
+        <div class="mb-6 flex items-start justify-between gap-4">
+          <div>
+            <p class="mb-2 inline-flex items-center rounded-full bg-sky-100 px-3 py-1 text-xs font-bold uppercase tracking-[0.2em] text-sky-700">
+              Pet Nutrition Tool
+            </p>
+            <h1 class="text-3xl font-black tracking-tight text-sky-700 md:text-4xl">🐶 Dog Weight Management by Tancy</h1>
+            <p class="mt-3 max-w-2xl text-sm leading-6 text-slate-600 md:text-base">
+              Estimate your dog's daily nutrition needs and compare current weight with a typical adult breed reference.
+            </p>
+          </div>
+        </div>
+
+        <div class="grid gap-5 md:grid-cols-2">
+          <label class="block">
+            <span class="mb-2 block text-sm font-semibold text-slate-700">Breed</span>
+            <select id="breed" class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-slate-800 shadow-sm outline-none transition focus:border-sky-400 focus:ring-4 focus:ring-sky-100">
+              <option value="poodle">Poodle</option>
+              <option value="bichon">Bichon Frise</option>
+              <option value="pug">Pug</option>
+              <option value="corgi">Corgi</option>
+              <option value="bulldog">Bulldog</option>
+              <option value="german_shepherd">German Shepherd</option>
+              <option value="husky">Husky</option>
+              <option value="alaskan_malamute">Alaskan Malamute</option>
+              <option value="shiba">Shiba Inu</option>
+              <option value="dachshund">Dachshund</option>
+              <option value="samoyed">Samoyed</option>
+              <option value="chihuahua">Chihuahua</option>
+            </select>
+          </label>
+
+          <label class="block">
+            <span class="mb-2 block text-sm font-semibold text-slate-700">Age (months)</span>
+            <input id="age" type="number" min="1" step="1" placeholder="Example: 8" class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-slate-800 shadow-sm outline-none transition focus:border-sky-400 focus:ring-4 focus:ring-sky-100" />
+          </label>
+
+          <label class="block md:col-span-2">
+            <span class="mb-2 block text-sm font-semibold text-slate-700">Weight (kg)</span>
+            <input id="weight" type="number" min="0.1" step="0.1" placeholder="Example: 12.5" class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-slate-800 shadow-sm outline-none transition focus:border-sky-400 focus:ring-4 focus:ring-sky-100" />
+          </label>
+        </div>
+
+        <div class="mt-6 flex flex-col gap-3 sm:flex-row">
+          <button id="calculateBtn" class="inline-flex items-center justify-center rounded-2xl bg-sky-600 px-5 py-3 font-bold text-white shadow-lg shadow-sky-200 transition hover:bg-sky-700 focus:outline-none focus:ring-4 focus:ring-sky-200">
+            Calculate Nutrition
+          </button>
+          <button id="resetBtn" class="inline-flex items-center justify-center rounded-2xl bg-white px-5 py-3 font-bold text-slate-700 ring-1 ring-slate-200 transition hover:bg-slate-50 focus:outline-none focus:ring-4 focus:ring-slate-200">
+            Reset
+          </button>
+        </div>
+
+        <div id="message" class="mt-4 hidden rounded-2xl px-4 py-3 text-sm font-medium"></div>
+
+        <div class="mt-8 grid gap-4 rounded-3xl bg-slate-50 p-5 md:grid-cols-3">
+          <div class="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-slate-100">
+            <p class="text-xs font-bold uppercase tracking-widest text-slate-400">Energy Formula</p>
+            <p class="mt-2 text-sm text-slate-600">Daily energy starts with 130 × weight^0.75, then adjusts for age.</p>
+          </div>
+          <div class="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-slate-100">
+            <p class="text-xs font-bold uppercase tracking-widest text-slate-400">Puppy Adjustment</p>
+            <p class="mt-2 text-sm text-slate-600">Under 6 months: ×2, from 6 to under 12 months: ×1.5.</p>
+          </div>
+          <div class="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-slate-100">
+            <p class="text-xs font-bold uppercase tracking-widest text-slate-400">Weight Status</p>
+            <p class="mt-2 text-sm text-slate-600">Compared against a typical adult reference for the selected breed.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="glass rounded-3xl border border-white/60 p-6 shadow-2xl shadow-pink-100/50 md:p-8">
+        <div class="mb-4 flex items-center justify-between gap-3">
+          <div>
+            <h2 class="text-2xl font-black text-slate-800">Results</h2>
+            <p class="mt-1 text-sm text-slate-500">Your dog's estimated nutrition summary will appear here.</p>
+          </div>
+          <div class="rounded-full bg-pink-100 px-3 py-1 text-xs font-bold uppercase tracking-[0.2em] text-pink-700">Live Output</div>
+        </div>
+
+        <div id="result" class="result-card rounded-3xl border border-dashed border-slate-200 bg-white/70 p-6 text-left shadow-inner">
+          <div class="flex min-h-[420px] flex-col items-center justify-center text-center text-slate-400">
+            <div class="text-5xl">🦴</div>
+            <p class="mt-4 text-lg font-semibold text-slate-500">No calculation yet</p>
+            <p class="mt-2 max-w-sm text-sm leading-6">Choose a breed, enter age and weight, then click <span class="font-semibold text-sky-700">Calculate Nutrition</span>.</p>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    const breedInfo = {
+      poodle: { label: "Poodle", refWeight: 6 },
+      bichon: { label: "Bichon Frise", refWeight: 5 },
+      pug: { label: "Pug", refWeight: 7 },
+      corgi: { label: "Corgi", refWeight: 12 },
+      bulldog: { label: "Bulldog", refWeight: 25 },
+      german_shepherd: { label: "German Shepherd", refWeight: 30 },
+      husky: { label: "Husky", refWeight: 22 },
+      alaskan_malamute: { label: "Alaskan Malamute", refWeight: 35 },
+      shiba: { label: "Shiba Inu", refWeight: 10 },
+      dachshund: { label: "Dachshund", refWeight: 8 },
+      samoyed: { label: "Samoyed", refWeight: 25 },
+      chihuahua: { label: "Chihuahua", refWeight: 3 }
+    };
+
+    const breedEl = document.getElementById("breed");
+    const ageEl = document.getElementById("age");
+    const weightEl = document.getElementById("weight");
+    const resultEl = document.getElementById("result");
+    const messageEl = document.getElementById("message");
+    const calculateBtn = document.getElementById("calculateBtn");
+    const resetBtn = document.getElementById("resetBtn");
+
+    function showMessage(text, type = "error") {
+      const styles = {
+        error: "bg-red-50 text-red-700 ring-1 ring-red-200",
+        success: "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200"
+      };
+
+      messageEl.className = `mt-4 rounded-2xl px-4 py-3 text-sm font-medium ${styles[type] || styles.error}`;
+      messageEl.textContent = text;
+      messageEl.classList.remove("hidden");
+    }
+
+    function clearMessage() {
+      messageEl.textContent = "";
+      messageEl.className = "mt-4 hidden rounded-2xl px-4 py-3 text-sm font-medium";
+    }
+
+    function formatNumber(value, decimals = 1) {
+      return Number(value).toFixed(decimals);
+    }
+
+    function getLifeStage(age) {
+      if (age < 6) return "Young puppy";
+      if (age < 12) return "Growing puppy";
+      if (age < 84) return "Adult";
+      return "Senior";
+    }
+
+    function calculate() {
+      clearMessage();
+
+      const breedKey = breedEl.value;
+      const age = parseFloat(ageEl.value);
+      const weight = parseFloat(weightEl.value);
+
+      if (!breedInfo[breedKey]) {
+        showMessage("Please select a valid breed.");
+        return;
+      }
+
+      if (Number.isNaN(age) || Number.isNaN(weight)) {
+        showMessage("Please enter both age and weight.");
+        return;
+      }
+
+      if (age <= 0 || weight <= 0) {
+        showMessage("Age and weight must be greater than 0.");
+        return;
+      }
+
+      const breed = breedInfo[breedKey];
+
+      let energy = 130 * Math.pow(weight, 0.75);
+      let ageMultiplier = 1;
+
+      if (age < 6) ageMultiplier = 2;
+      else if (age < 12) ageMultiplier = 1.5;
+
+      energy *= ageMultiplier;
+
+      const protein = (energy * 0.25) / 4;
+      const fat = (energy * 0.15) / 9;
+      const fiber = (energy * 0.05) / 4;
+      const ash = (energy * 0.03) / 4;
+      const carbohydrate = (energy * 0.52) / 4;
+      const moisture = weight * 50;
+
+      const ref = breed.refWeight;
+      const lowBand = ref * 0.8;
+      const highBand = ref * 1.2;
+
+      let statusLabel = "Ideal weight";
+      let statusClass = "bg-emerald-100 text-emerald-700";
+      let advice = "Maintain balanced nutrition, steady meal portions, hydration, and regular exercise.";
+      let progressTone = "bg-emerald-500";
+
+      if (weight > highBand) {
+        statusLabel = "Overweight (>20%)";
+        statusClass = "bg-red-100 text-red-700";
+        advice = "Reduce high-fat treats, control portions carefully, increase fiber-rich foods, and add more daily exercise if your vet agrees.";
+        progressTone = "bg-red-500";
+      } else if (weight < lowBand) {
+        statusLabel = "Underweight (>20%)";
+        statusClass = "bg-amber-100 text-amber-700";
+        advice = "Increase high-quality protein and energy intake gradually, review feeding frequency, and monitor health closely with veterinary support if needed.";
+        progressTone = "bg-amber-500";
+      }
+
+      const relativePercent = Math.min((weight / ref) * 100, 180);
+      const lifeStage = getLifeStage(age);
+
+      resultEl.innerHTML = `
+        <div class="space-y-6">
+          <div class="flex flex-col gap-4 rounded-3xl bg-gradient-to-r from-sky-600 to-cyan-500 p-5 text-white shadow-lg shadow-sky-200 md:flex-row md:items-center md:justify-between">
+            <div>
+              <p class="text-xs font-bold uppercase tracking-[0.2em] text-white/80">Selected Profile</p>
+              <h3 class="mt-2 text-2xl font-black">${breed.label}</h3>
+              <p class="mt-1 text-sm text-white/85">${lifeStage} • ${formatNumber(weight, 1)} kg • ${formatNumber(age, 0)} months</p>
+            </div>
+            <div class="rounded-2xl bg-white/15 px-4 py-3 text-center backdrop-blur-sm">
+              <p class="text-xs font-bold uppercase tracking-widest text-white/75">Daily Energy</p>
+              <p class="mt-1 text-3xl font-black">${formatNumber(energy, 0)}</p>
+              <p class="text-sm text-white/85">kcal/day</p>
+            </div>
+          </div>
+
+          <div class="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+            <div class="rounded-2xl bg-slate-50 p-4 ring-1 ring-slate-200">
+              <p class="text-xs font-bold uppercase tracking-widest text-slate-400">Protein</p>
+              <p class="mt-2 text-2xl font-black text-slate-800">${formatNumber(protein)} g</p>
+            </div>
+            <div class="rounded-2xl bg-slate-50 p-4 ring-1 ring-slate-200">
+              <p class="text-xs font-bold uppercase tracking-widest text-slate-400">Fat</p>
+              <p class="mt-2 text-2xl font-black text-slate-800">${formatNumber(fat)} g</p>
+            </div>
+            <div class="rounded-2xl bg-slate-50 p-4 ring-1 ring-slate-200">
+              <p class="text-xs font-bold uppercase tracking-widest text-slate-400">Fiber</p>
+              <p class="mt-2 text-2xl font-black text-slate-800">${formatNumber(fiber)} g</p>
+            </div>
+            <div class="rounded-2xl bg-slate-50 p-4 ring-1 ring-slate-200">
+              <p class="text-xs font-bold uppercase tracking-widest text-slate-400">Ash</p>
+              <p class="mt-2 text-2xl font-black text-slate-800">${formatNumber(ash)} g</p>
+            </div>
+            <div class="rounded-2xl bg-slate-50 p-4 ring-1 ring-slate-200">
+              <p class="text-xs font-bold uppercase tracking-widest text-slate-400">Carbohydrate</p>
+              <p class="mt-2 text-2xl font-black text-slate-800">${formatNumber(carbohydrate)} g</p>
+            </div>
+            <div class="rounded-2xl bg-slate-50 p-4 ring-1 ring-slate-200">
+              <p class="text-xs font-bold uppercase tracking-widest text-slate-400">Moisture</p>
+              <p class="mt-2 text-2xl font-black text-slate-800">${formatNumber(moisture, 0)} ml</p>
+            </div>
+          </div>
+
+          <div class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
+            <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <p class="text-xs font-bold uppercase tracking-[0.2em] text-slate-400">Weight Status</p>
+                <div class="mt-2 inline-flex rounded-full px-3 py-1 text-sm font-bold ${statusClass}">${statusLabel}</div>
+              </div>
+              <div class="text-sm text-slate-500">
+                Breed reference: <span class="font-bold text-slate-700">${formatNumber(ref, 1)} kg</span>
+              </div>
+            </div>
+
+            <div class="mt-5">
+              <div class="mb-2 flex items-center justify-between text-sm text-slate-500">
+                <span>Relative to breed reference</span>
+                <span class="font-semibold text-slate-700">${formatNumber((weight / ref) * 100, 0)}%</span>
+              </div>
+              <div class="h-3 overflow-hidden rounded-full bg-slate-100">
+                <div class="h-full rounded-full ${progressTone}" style="width: ${relativePercent}%"></div>
+              </div>
+              <div class="mt-2 flex justify-between text-xs text-slate-400">
+                <span>80%</span>
+                <span>100%</span>
+                <span>120%</span>
+              </div>
+            </div>
+
+            <div class="mt-5 rounded-2xl bg-slate-50 p-4">
+              <p class="text-xs font-bold uppercase tracking-widest text-slate-400">Recommendation</p>
+              <p class="mt-2 text-sm leading-6 text-slate-600">${advice}</p>
+            </div>
+          </div>
+        </div>
+      `;
+
+      showMessage("Calculation completed successfully.", "success");
+    }
+
+    function resetForm() {
+      breedEl.value = "poodle";
+      ageEl.value = "";
+      weightEl.value = "";
+      clearMessage();
+      resultEl.innerHTML = `
+        <div class="flex min-h-[420px] flex-col items-center justify-center text-center text-slate-400">
+          <div class="text-5xl">🦴</div>
+          <p class="mt-4 text-lg font-semibold text-slate-500">No calculation yet</p>
+          <p class="mt-2 max-w-sm text-sm leading-6">Choose a breed, enter age and weight, then click <span class="font-semibold text-sky-700">Calculate Nutrition</span>.</p>
+        </div>
+      `;
+    }
+
+    calculateBtn.addEventListener("click", calculate);
+    resetBtn.addEventListener("click", resetForm);
+
+    [ageEl, weightEl].forEach((input) => {
+      input.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") {
+          calculate();
+        }
+      });
+    });
+  </script>
+</body>
+</html>
